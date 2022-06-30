@@ -36,8 +36,8 @@ class SurveyController extends GetxController {
   var isLoadingFilter = false.obs;
   String typeSurvey = "";
   String statusSurvey = "";
-  late String kodeUnikResponden;
-  late int namaSurveyId;
+  String kodeUnikResponden = "";
+  int namaSurveyId = 0;
   List<Survey> surveys = [];
   List<Responden> responden = [];
   List<NamaSurvey> namaSurvey = [];
@@ -133,10 +133,14 @@ class SurveyController extends GetxController {
     if (isConnect) {
       debugPrint('get online nama survey');
       try {
-        List<NamaSurvey>? response = await DioClient().getNamaSurvey(
+        List<NamaSurvey>? nResponse = await DioClient().getNamaSurvey(
           token: token,
         );
-        namaSurvey = response!;
+        if (nResponse != null) {
+          List<NamaSurvey>? response =
+              nResponse.where((element) => element.isAktif == 1).toList();
+          namaSurvey = response;
+        }
       } on DioError catch (e) {
         if (e.response?.statusCode == 404) {
           namaSurvey = [];
@@ -146,8 +150,10 @@ class SurveyController extends GetxController {
       }
     } else {
       debugPrint('message: get local nama survey');
-      List<NamaSurveyModel>? localNamaSurvey =
+      List<NamaSurveyModel>? nlocalNamaSurvey =
           await DbHelper.getNamaSurvey(Objectbox.store_);
+      List<NamaSurveyModel> localNamaSurvey =
+          nlocalNamaSurvey.where((element) => element.isAktif == 1).toList();
       namaSurvey =
           localNamaSurvey.map((e) => NamaSurvey.fromJson(e.toJson())).toList();
     }
@@ -156,11 +162,17 @@ class SurveyController extends GetxController {
   bool validate() {
     respondenError.value = "";
     namaSurveyError.value = "";
+    if (kodeUnikResponden.toString() == "") {
+      respondenError.value = "Pilih responden yang terdaftar";
+    }
     if (respondenTEC.text.trim() == "") {
       respondenError.value = "Responden wajib diisi";
     }
+    if (namaSurveyId == 0) {
+      namaSurveyError.value = "Pilih jenis survey yang terdaftar";
+    }
     if (namaSurveyTEC.text.trim() == "") {
-      namaSurveyError.value = "Nama survey wajib diisi";
+      namaSurveyError.value = "Jenis survey wajib diisi";
     }
     if (respondenError.value.isNotEmpty || namaSurveyError.value.isNotEmpty) {
       return false;
@@ -186,8 +198,12 @@ class SurveyController extends GetxController {
           List<Survey>? response =
               await DioClient().createSurvey(token: token, data: data);
           isLoading.value = false;
-          Get.toNamed(RouteName.isiSurvey, arguments: [response![0], false]);
-          successScackbar("Survey berhasil disimpan");
+          if (response != null) {
+            successScackbar("Survey berhasil disimpan");
+            Get.toNamed(RouteName.isiSurvey, arguments: [response[0], false]);
+          } else {
+            errorScackbar("Survey sudah pernah dibuat sebelumnya");
+          }
         } on DioError catch (e) {
           if (e.response?.statusCode == 302) {
             errorScackbar(
@@ -239,6 +255,7 @@ class SurveyController extends GetxController {
         await DbHelper.deleteSurvey(Objectbox.store_,
             kodeUnik: int.parse(kodeUnik));
         surveys.removeWhere((element) => element.kodeUnik == kodeUnik);
+        successScackbar("Survey berhasil dihapus");
       } on DioError catch (e) {
         handleError(error: e);
       }
