@@ -50,7 +50,7 @@ class ProfileModel {
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId.toString(),
-        "institusi_id": institusi.toString(),
+        "institusi_id": institusi.targetId.toString(),
         "nama_lengkap": namaLengkap.toString(),
         "jenis_kelamin": jenisKelamin.toString(),
         "tempat_lahir": tempatLahir.toString(),

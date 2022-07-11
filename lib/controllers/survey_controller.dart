@@ -233,6 +233,8 @@ class SurveyController extends GetxController {
             element.namaSurvey.targetId == namaSurveyId);
         if (survey != null) {
           errorScackbar('Survey sudah ada');
+          loadingDialog(context, show: false);
+          isLoading.value = false;
           return;
         }
         List<KategoriSoalModel> kategoriSoal =

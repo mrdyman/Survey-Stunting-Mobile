@@ -104,7 +104,7 @@ class SurveyItem extends StatelessWidget {
                     height: size.height * 0.005,
                   ),
                   Text(
-                    survey.profile!.namaLengkap,
+                    survey.responden!.namaKepalaKeluarga,
                     style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).hintColor,

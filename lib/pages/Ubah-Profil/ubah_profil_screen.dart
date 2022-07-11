@@ -121,7 +121,7 @@ class UbahProfilScreen extends StatelessWidget {
                               () => FilledAutocomplete(
                                 controller: controller.provinsiTEC,
                                 hintText: "Pilih Provinsi",
-                                title: "Provisi",
+                                title: "Provinsi",
                                 errorText: controller.provinsiError.value,
                                 items: controller.provinsi
                                     .map(
