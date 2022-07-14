@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -353,6 +354,9 @@ class IsiSurveyController extends GetxController {
           children: [
             FilledTextField(
               keyboardType: isNumerik == 1 ? TextInputType.number : null,
+              inputFormatters: isNumerik == 1
+                  ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
+                  : null,
               title: "$number. $soal",
               initialValue: initialValue?.jawabanLainnya ?? "",
               validator: (value) {
