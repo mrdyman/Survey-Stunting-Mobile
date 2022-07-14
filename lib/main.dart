@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -16,6 +18,7 @@ import 'models/user_profile.dart';
 late final Objectbox objectbox;
 late bool isConnect;
 Future<void> main() async {
+  // HttpOverrides.global = MyHttpOverrides(); //! for android version 5-- only(certificate problem)
   await dotenv.load(fileName: ".env");
   await GetStorage.init();
   Get.put<GetStorage>(GetStorage());

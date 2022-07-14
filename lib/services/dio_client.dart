@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:survey_stunting/models/akun.dart';
@@ -24,6 +25,16 @@ import 'package:survey_stunting/models/total_survey.dart';
 import 'package:survey_stunting/models/user_profile.dart';
 import 'package:survey_stunting/services/logging.dart';
 
+//! for android version 5-- only(certificate problem)
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
+//!======================================================
 class DioClient {
   final Dio _dio = Dio(
     BaseOptions(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
+import 'package:survey_stunting/components/loading_dialog.dart';
 import 'package:survey_stunting/models/auth.dart';
 import 'package:survey_stunting/models/session.dart';
 import 'package:survey_stunting/routes/route_name.dart';
@@ -37,6 +38,7 @@ class LoginController extends GetxController {
   }
 
   Future login() async {
+    loadingDialog(Get.context!);
     if (validate()) {
       final DioClient _dioClient = DioClient();
       Auth auth = Auth(username: username.text, password: password.text);
@@ -55,13 +57,18 @@ class LoginController extends GetxController {
         }
       } on DioError catch (e) {
         if (e.response?.statusCode == 401) {
+          loadingDialog(Get.context!, show: false);
           errorScackbar('Nama pengguna atau kata sandi salah');
         } else if (e.response?.statusCode == 403) {
+          loadingDialog(Get.context!, show: false);
           errorScackbar('Akun tidak diizinkan menggunakan mobile version');
         } else {
+          loadingDialog(Get.context!, show: false);
           handleError(error: e);
         }
       }
+    } else {
+      loadingDialog(Get.context!, show: false);
     }
   }
 }
