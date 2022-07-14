@@ -65,6 +65,7 @@ class IsiSurveyScreen extends StatelessWidget {
                                 soal: value.soal.soal,
                                 soalId: value.soal.id,
                                 typeJawaban: value.soal.tipeJawaban,
+                                isNumerik: int.parse(value.soal.isNumerik),
                                 jawabanSoal: value.jawabanSoal,
                               );
                             }).toList(),

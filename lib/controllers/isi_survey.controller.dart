@@ -220,6 +220,7 @@ class IsiSurveyController extends GetxController {
     required int number,
     required String soal,
     required String typeJawaban,
+    required int isNumerik,
     required int soalId,
     List<JawabanSoal>? jawabanSoal,
     required BuildContext context,
@@ -351,6 +352,7 @@ class IsiSurveyController extends GetxController {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FilledTextField(
+              keyboardType: isNumerik == 1 ? TextInputType.number : null,
               title: "$number. $soal",
               initialValue: initialValue?.jawabanLainnya ?? "",
               validator: (value) {

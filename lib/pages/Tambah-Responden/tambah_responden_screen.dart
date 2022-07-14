@@ -136,7 +136,7 @@ class TambahRespondenScreen extends StatelessWidget {
                     ),
                   ),
                   FilledTextField(
-                    title: "Nomor HP (Optional)",
+                    title: "Nomor HP (Boleh kosong)",
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     controller: controller.nomorHPTEC,
