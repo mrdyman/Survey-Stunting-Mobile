@@ -405,6 +405,8 @@ class IsiSurveyController extends GetxController {
 
           await nextCategory();
           successScackbar("Data berhasil disimpan");
+        } else {
+          errorScackbar('Mohon Lengkapi jawaban');
         }
       } on DioError catch (e) {
         handleError(error: e);
