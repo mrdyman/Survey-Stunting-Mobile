@@ -18,22 +18,31 @@ class SinkronisasiController extends GetxController {
   var lastSync = ''.obs;
 
   Future synchronize() async {
+    bool timeout = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     synchronizeStatus.value = 'waiting';
     await checkConnection();
     if (isConnect) {
       isLoading.value = true;
       await SyncDataController(store_: Objectbox.store_)
-          .syncData(syncAll: true);
-      successScackbar('Sinkronisasi Berhasil');
-      synchronizeStatus.value = 'successfully';
-      // set value last sync
-      prefs.setString('last_sync', DateTime.now().toString());
-      lastSync.value = prefs.getString('last_sync') == null
-          ? 'Belum pernah melakukan Sinkronisasi data'
-          : DateFormat("dd-MMMM-yyyy hh:mm a")
-              .format(DateTime.parse(prefs.getString('last_sync')!));
-      isLoading.value = false;
+          .syncData(syncAll: true)
+          .timeout(const Duration(seconds: 120), onTimeout: () {
+        timeout = true;
+        isLoading.value = false;
+        errorScackbar('Mohon untuk melakukan sinkronisasi kembali');
+        synchronizeStatus.value = 'failed';
+      });
+      if (!timeout) {
+        successScackbar('Sinkronisasi Berhasil');
+        synchronizeStatus.value = 'successfully';
+        // set value last sync
+        prefs.setString('last_sync', DateTime.now().toString());
+        lastSync.value = prefs.getString('last_sync') == null
+            ? 'Belum pernah melakukan Sinkronisasi data'
+            : DateFormat("dd-MMMM-yyyy hh:mm a")
+                .format(DateTime.parse(prefs.getString('last_sync')!));
+        isLoading.value = false;
+      }
     } else {
       errorScackbar('Tidak ada koneksi internet');
       synchronizeStatus.value = 'failed';
