@@ -558,6 +558,10 @@ class IsiSurveyController extends GetxController {
     if (!isEdit || survey.isSelesai == "0") {
       await updateSurvey();
     }
+    if (isEdit) {
+      await DbHelper.touchSurvey(Objectbox.store_,
+          kodeUnikSurvey: int.parse(survey.kodeUnik!));
+    }
     await getJawabanSurvey();
     await getSoal();
     await getJawabanSoal();
