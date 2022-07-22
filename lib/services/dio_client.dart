@@ -139,9 +139,24 @@ class DioClient {
     required String token,
     required Survey data,
     bool? sync = false,
-    int? kartuKeluarga,
+    bool? touch = false,
+    String? kartuKeluarga,
   }) async {
     try {
+      if (touch == true) {
+        Response response = await _dio.post(
+          "/surveyor/survey",
+          data: surveyToJson(data),
+          queryParameters: {
+            "touch": true,
+          },
+          options: Options(headers: {
+            "authorization": "Bearer $token",
+          }),
+        );
+        log(response.data);
+        return null;
+      }
       if (sync == true) {
         Response response = await _dio.post(
           "/surveyor/survey",

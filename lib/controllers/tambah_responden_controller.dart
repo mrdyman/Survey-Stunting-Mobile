@@ -154,7 +154,7 @@ class TambahRespondenController extends GetxController {
         List<RespondenModel> nResponden =
             await DbHelper.getResponden(Objectbox.store_);
         var responden = nResponden.firstWhereOrNull(
-            (resp) => resp.kartuKeluarga == int.parse(kartuKeluargaTEC.text));
+            (resp) => resp.kartuKeluarga == kartuKeluargaTEC.text);
         if (responden != null) {
           errorScackbar('Responden sudah ada');
           return;
@@ -165,7 +165,7 @@ class TambahRespondenController extends GetxController {
         RespondenModel respondenModel = RespondenModel(
           id: id,
           kodeUnik: uniqueCode,
-          kartuKeluarga: int.parse(kartuKeluargaTEC.text),
+          kartuKeluarga: kartuKeluargaTEC.text,
           namaKepalaKeluarga: namaKepalaKeluargaTEC.text,
           alamat: alamatTEC.text,
           nomorHp: nomorHPTEC.text,

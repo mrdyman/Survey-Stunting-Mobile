@@ -211,6 +211,30 @@ class SurveyController extends GetxController {
             );
             Get.back(closeOverlays: true);
             Get.toNamed(RouteName.isiSurvey, arguments: [response[0], false]);
+            //also create data local
+            List<SurveyModel> nSurvey =
+                await DbHelper.getSurvey(Objectbox.store_);
+            var survey = nSurvey.firstWhereOrNull((element) =>
+                element.kodeUnikResponden.targetId ==
+                    int.parse(kodeUnikResponden) &&
+                element.namaSurvey.targetId == namaSurveyId);
+            //local survey not found in local?
+            if (survey == null) {
+              List<KategoriSoalModel> kategoriSoal =
+                  await DbHelper.getKategoriSoalByNamaSurveyId(Objectbox.store_,
+                      namaSurveyId: namaSurveyId);
+              int nextCategori = kategoriSoal[0].id!;
+              SurveyModel data = SurveyModel(
+                kodeUnik: int.parse(response[0].kodeUnik!),
+                kodeUnikRespondenId: int.parse(kodeUnikResponden),
+                namaSurveyId: namaSurveyId,
+                profileId: profileId,
+                isSelesai: 0,
+                kategoriSelanjutnya: nextCategori,
+                lastModified: DateTime.now().toString(),
+              );
+              await DbHelper.putSurvey(Objectbox.store_, [data]);
+            }
           } else {
             loadingDialog(context, show: false);
             errorScackbar("Survey sudah pernah dibuat sebelumnya");
@@ -259,6 +283,8 @@ class SurveyController extends GetxController {
         successScackbar("Survey berhasil disimpan");
       }
       isLoading.value = false;
+    } else {
+      loadingDialog(context, show: false);
     }
   }
 
@@ -284,6 +310,7 @@ class SurveyController extends GetxController {
       await DbHelper.deleteSurvey(Objectbox.store_,
           kodeUnik: int.parse(kodeUnik));
       surveys.removeWhere((element) => element.kodeUnik == kodeUnik);
+      successScackbar("Survey berhasil dihapus");
     }
     isLoading.value = false;
   }

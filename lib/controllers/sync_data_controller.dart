@@ -537,6 +537,8 @@ class SyncDataController {
     var profileData =
         await DbHelper.getProfileByUserId(Objectbox.store_, userId: userId);
     int userProfileId = profileData!.id!;
+    List<int> keepOrReplaceLocal = [];
+    List<int> keepOrReplaceServer = [];
 
     try {
       List<SurveyModel> serverToPullCreate = [];
@@ -544,7 +546,7 @@ class SyncDataController {
       List<Survey> localToPushCreate = [];
       List<Survey> localToPushUpdate = [];
 
-      // Get user form server
+      // Get survey form server
       List<Survey>? surveys = await DioClient().getSurvey(token: token);
       List<SurveyModel> localSurveys =
           await DbHelper.getSurveyByProfileId(store_, profileId: userProfileId);
@@ -568,10 +570,60 @@ class SyncDataController {
                 // local data is greater than server data
                 debugPrint("Local data is greater than server data");
                 localToPushUpdate.add(Survey.fromJson(nLocalSurvey.toJson()));
+                //check if kategori selanjutnya on server is null (survey selesai)
+                if (survey.isSelesai == "1") {
+                  if (nLocalSurvey.isSelesai == 1) {
+                    String mHashCode = survey.kodeUnik! + 'false';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  } else {
+                    String mHashCode = survey.kodeUnik! + 'true';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  }
+                } else {
+                  if (nLocalSurvey.isSelesai == 1) {
+                    String mHashCode = survey.kodeUnik! + 'false';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  } else {
+                    int kategoriLocal = nLocalSurvey.kategoriSelanjutnya!;
+                    int kategoriServer = int.parse(survey.kategoriSelanjutnya!);
+                    if (kategoriLocal > kategoriServer) {
+                      String mHashCode = survey.kodeUnik! + 'false';
+                      keepOrReplaceServer.add(mHashCode.hashCode);
+                    } else {
+                      String mHashCode = survey.kodeUnik! + 'true';
+                      keepOrReplaceServer.add(mHashCode.hashCode);
+                    }
+                  }
+                }
               } else if (time == -1) {
                 // local data is less than server data
                 debugPrint("Local data is less than server data");
                 serverToPullUpdate.add(SurveyModel.fromJson(survey.toJson()));
+                // check if kategori selanjutnya on server is null (survey selesai)
+                if (nLocalSurvey.isSelesai == 1) {
+                  if (survey.isSelesai == "1") {
+                    String mHashCode = survey.kodeUnik! + 'false';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  } else {
+                    String mHashCode = survey.kodeUnik! + 'true';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  }
+                } else {
+                  if (survey.isSelesai == "1") {
+                    String mHashCode = survey.kodeUnik! + 'false';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  } else {
+                    int kategoriLocal = nLocalSurvey.kategoriSelanjutnya!;
+                    int kategoriServer = int.parse(survey.kategoriSelanjutnya!);
+                    if (kategoriServer > kategoriLocal) {
+                      String mHashCode = survey.kodeUnik! + 'false';
+                      keepOrReplaceLocal.add(mHashCode.hashCode);
+                    } else {
+                      String mHashCode = survey.kodeUnik! + 'true';
+                      keepOrReplaceLocal.add(mHashCode.hashCode);
+                    }
+                  }
+                }
               }
             } catch (e) {
               serverToPullCreate.add(SurveyModel.fromJson(survey.toJson()));
@@ -596,24 +648,105 @@ class SyncDataController {
                 // local data is greater than server data
                 debugPrint("Local data is greater than server data");
                 localToPushUpdate.add(Survey.fromJson(localSurvey.toJson()));
+                //check if kategori selanjutnya on server is null (survey selesai)
+                if (nServerSurvey.isSelesai == "1") {
+                  if (localSurvey.isSelesai == 1) {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  } else {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'true';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  }
+                } else {
+                  if (localSurvey.isSelesai == 1) {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                    keepOrReplaceServer.add(mHashCode.hashCode);
+                  } else {
+                    int kategoriLocal = localSurvey.kategoriSelanjutnya!;
+                    int kategoriServer =
+                        int.parse(nServerSurvey.kategoriSelanjutnya!);
+                    if (kategoriLocal > kategoriServer) {
+                      String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                      keepOrReplaceServer.add(mHashCode.hashCode);
+                    } else {
+                      String mHashCode = nServerSurvey.kodeUnik! + 'true';
+                      keepOrReplaceServer.add(mHashCode.hashCode);
+                    }
+                  }
+                }
               } else if (time == -1) {
                 // local data is less than server data
                 debugPrint("Local data is less than server data");
                 serverToPullUpdate
                     .add(SurveyModel.fromJson(nServerSurvey.toJson()));
+                // check if kategori selanjutnya on server is null (survey selesai)
+                if (localSurvey.isSelesai == 1) {
+                  if (nServerSurvey.isSelesai == "1") {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  } else {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'true';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  }
+                } else {
+                  if (nServerSurvey.isSelesai == "1") {
+                    String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                    keepOrReplaceLocal.add(mHashCode.hashCode);
+                  } else {
+                    int kategoriLocal = localSurvey.kategoriSelanjutnya!;
+                    int kategoriServer =
+                        int.parse(nServerSurvey.kategoriSelanjutnya!);
+                    if (kategoriServer > kategoriLocal) {
+                      String mHashCode = nServerSurvey.kodeUnik! + 'false';
+                      keepOrReplaceLocal.add(mHashCode.hashCode);
+                    } else {
+                      String mHashCode = nServerSurvey.kodeUnik! + 'true';
+                      keepOrReplaceLocal.add(mHashCode.hashCode);
+                    }
+                  }
+                }
               }
             } catch (e) {
               localToPushCreate.add(Survey.fromJson(localSurvey.toJson()));
               continue;
             }
           }
+          List<Survey> tempLocalToPushUpdate = [];
+          List<SurveyModel> tempServerToPullUpdate = [];
+          tempLocalToPushUpdate = localToPushUpdate;
+          tempServerToPullUpdate = serverToPullUpdate;
+          // remove duplicate data
+          for (var i = 0; i < localToPushUpdate.length; i++) {
+            for (var j = 0; j < localToPushUpdate.length; j++) {
+              if (localToPushUpdate[i].kodeUnik ==
+                      localToPushUpdate[j].kodeUnik &&
+                  i != j) {
+                tempLocalToPushUpdate.removeAt(j);
+              }
+            }
+          }
+
+          for (var k = 0; k < serverToPullUpdate.length; k++) {
+            for (var l = 0; l < serverToPullUpdate.length; l++) {
+              if (serverToPullUpdate[k].kodeUnik ==
+                      serverToPullUpdate[l].kodeUnik &&
+                  k != l) {
+                tempServerToPullUpdate.removeAt(l);
+              }
+            }
+          }
+
+          localToPushUpdate = tempLocalToPushUpdate;
+          serverToPullUpdate = tempServerToPullUpdate;
 
           if (localToPushCreate.isNotEmpty) {
             pushSurvey(localToPushCreate.toSet().toList(), isCreate: true);
           }
 
           if (localToPushUpdate.isNotEmpty) {
-            pushSurvey(localToPushUpdate.toSet().toList(), isCreate: false);
+            pushSurvey(localToPushUpdate.toSet().toList(),
+                isCreate: false,
+                keepOrReplace: keepOrReplaceServer.toSet().toList());
           }
 
           if (serverToPullCreate.isNotEmpty) {
@@ -625,7 +758,8 @@ class SyncDataController {
           if (serverToPullUpdate.isNotEmpty) {
             pullSurvey(
                 surveyData: serverToPullUpdate.toSet().toList(),
-                isCreate: false);
+                isCreate: false,
+                keepOrReplace: keepOrReplaceLocal.toSet().toList());
           }
         } else {
           // local survey not exist
@@ -637,6 +771,16 @@ class SyncDataController {
         debugPrint("survey data not found on server");
       }
     } on DioError catch (e) {
+      //survey not found on server push from local if exist
+      List<SurveyModel> localSurveys =
+          await DbHelper.getSurveyByProfileId(store_, profileId: userProfileId);
+      if (localSurveys.isNotEmpty) {
+        List<Survey> dataToPush = [];
+        for (var item in localSurveys) {
+          dataToPush.add(Survey.fromJson(item.toJson()));
+        }
+        pushSurvey(dataToPush.toSet().toList(), isCreate: true);
+      }
       if (e.response?.statusCode != 404) {
         handleError(error: e);
       }
@@ -700,20 +844,58 @@ class SyncDataController {
     }
   }
 
-  void pushSurvey(List<Survey> surveyData, {required bool isCreate}) async {
+  void pushSurvey(List<Survey> surveyData,
+      {required bool isCreate, List<int>? keepOrReplace}) async {
     List<int> kodeUnik = [];
+    int i = 0;
     for (var survey in surveyData) {
-      kodeUnik.add(int.parse(survey.kodeUnik!));
-      RespondenModel responden = await DbHelper.getRespondenByKodeUnik(store_,
-          kodeUnik: int.parse(survey.kodeUnikResponden));
-      await DioClient().createSurvey(
-        token: token,
-        data: survey,
-        sync: true,
-        kartuKeluarga: responden.kartuKeluarga,
-      );
+      //check if this want to update or create
+      if (keepOrReplace != null) {
+        if (keepOrReplace.isNotEmpty) {
+          // this one is want to update
+          String currentKodeUnikTrue = survey.kodeUnik! + 'true';
+          String currentKodeUnikFalse = survey.kodeUnik! + 'false';
+          if (keepOrReplace[i] == currentKodeUnikTrue.hashCode) {
+            //this one only need to touch(update time_stamp)
+            await DioClient().createSurvey(
+              token: token,
+              data: survey,
+              touch: true,
+            );
+            debugPrint('UPDATE SURVEY LOG: survey touced');
+          } else if (keepOrReplace[i] == currentKodeUnikFalse.hashCode) {
+            //this one is need to update entire data
+            kodeUnik.add(int.parse(survey.kodeUnik!));
+            RespondenModel responden = await DbHelper.getRespondenByKodeUnik(
+                store_,
+                kodeUnik: int.parse(survey.kodeUnikResponden));
+            await DioClient().createSurvey(
+              token: token,
+              data: survey,
+              sync: true,
+              kartuKeluarga: responden.kartuKeluarga,
+            );
+            debugPrint('UPDATE SURVEY LOG: survey updated entire data');
+          } else {
+            debugPrint('UPDATE SURVEY LOG: unknown operation');
+          }
+          i++;
+        }
+      } else {
+        kodeUnik.add(int.parse(survey.kodeUnik!));
+        RespondenModel responden = await DbHelper.getRespondenByKodeUnik(store_,
+            kodeUnik: int.parse(survey.kodeUnikResponden));
+        await DioClient().createSurvey(
+          token: token,
+          data: survey,
+          sync: true,
+          kartuKeluarga: responden.kartuKeluarga,
+        );
+      }
     }
-    pushJawabanSurvey(kodeUnikSurvey: kodeUnik.toSet().toList());
+    if (kodeUnik.isNotEmpty) {
+      pushJawabanSurvey(kodeUnikSurvey: kodeUnik.toSet().toList());
+    }
   }
 
   void pushJawabanSurvey({required List<int> kodeUnikSurvey}) async {
@@ -1191,7 +1373,7 @@ class SyncDataController {
             RespondenModel respondenModel = RespondenModel(
               id: id,
               kodeUnik: int.parse(resp.kodeUnik!),
-              kartuKeluarga: int.parse(resp.kartuKeluarga),
+              kartuKeluarga: resp.kartuKeluarga,
               namaKepalaKeluarga: resp.namaKepalaKeluarga,
               alamat: resp.alamat,
               nomorHp: resp.nomorHp.toString(),
@@ -1268,6 +1450,7 @@ class SyncDataController {
     List<SurveyModel>? surveyData,
     required bool isCreate,
     bool syncJawabanSurvey = false,
+    List<int>? keepOrReplace,
   }) async {
     int id = await getIdSurvey();
     List<SurveyModel> nSurvey = [];
@@ -1327,33 +1510,63 @@ class SyncDataController {
         await DbHelper.putSurvey(store_, nSurvey);
         debugPrint("survey data has been pulled from server to local[create]");
       } else {
+        int i = 0;
         for (var item in surveyData) {
-          int idToUpdate = await getCurrentSurveyId(kodeUnik: item.kodeUnik);
-          if (idToUpdate != -1) {
-            SurveyModel surveyModel = SurveyModel(
-              id: idToUpdate,
-              kodeUnik: item.kodeUnik,
-              kategoriSelanjutnya: item.kategoriSelanjutnya,
-              isSelesai: item.isSelesai,
-              namaSurveyId: item.namaSurveyId,
-              profileId: item.profileId,
-              kodeUnikRespondenId: item.kodeUnikRespondenId,
-              lastModified: item.lastModified,
-            );
-            nSurvey.add(surveyModel);
-          } else {
-            errorScackbar('Survey tidak ditemukan');
+          //check if this survey want to update or create
+          if (keepOrReplace != null) {
+            if (keepOrReplace.isNotEmpty) {
+              //this one is want to update
+              String currentKodeUnikTrue = item.kodeUnik.toString() + 'true';
+              String currentKodeUnikFalse = item.kodeUnik.toString() + 'false';
+              if (keepOrReplace[i] == currentKodeUnikTrue.hashCode) {
+                // this one only need to touch(update time stamps)
+                int touch = await DbHelper.touchSurvey(Objectbox.store_,
+                    kodeUnikSurvey: item.kodeUnik);
+                if (touch > 0) {
+                  //survey touched successful
+                  log('local survey touched successful');
+                } else {
+                  //failed to touch survey local
+                  log('local survey failed to touch');
+                }
+              } else if (keepOrReplace[i] == currentKodeUnikFalse.hashCode) {
+                //this one is need to update entire data
+                log('UPDATE SURVEY LOCAL LOG survey updated entire data');
+                int idToUpdate =
+                    await getCurrentSurveyId(kodeUnik: item.kodeUnik);
+                if (idToUpdate != -1) {
+                  SurveyModel surveyModel = SurveyModel(
+                    id: idToUpdate,
+                    kodeUnik: item.kodeUnik,
+                    kategoriSelanjutnya: item.kategoriSelanjutnya,
+                    isSelesai: item.isSelesai,
+                    namaSurveyId: item.namaSurveyId,
+                    profileId: item.profileId,
+                    kodeUnikRespondenId: item.kodeUnikRespondenId,
+                    lastModified: item.lastModified,
+                  );
+                  nSurvey.add(surveyModel);
+                } else {
+                  errorScackbar('Survey tidak ditemukan');
+                }
+              } else {
+                log('UPDATE SURVEY LOCAL LOG unknown operation');
+              }
+              i++;
+            }
           }
         }
-        await DbHelper.putSurvey(store_, nSurvey);
-        debugPrint("survey data has been pulled from server to local[update]");
+        if (nSurvey.isNotEmpty) {
+          await DbHelper.putSurvey(store_, nSurvey);
+          debugPrint(
+              "survey data has been pulled from server to local[update]");
+          List<int> kodeUnikSurvey = [];
+          for (var kode in surveyData) {
+            kodeUnikSurvey.add(kode.kodeUnik);
+          }
+          await pullJawabanSurvey(kodeUnik: kodeUnikSurvey.toSet().toList());
+        }
       }
-      // Pull JawabanSurvey (Delete current and change with new data)
-      List<int> kodeUnikSurvey = [];
-      for (var kode in surveyData) {
-        kodeUnikSurvey.add(kode.kodeUnik);
-      }
-      await pullJawabanSurvey(kodeUnik: kodeUnikSurvey);
     }
   }
 
@@ -1391,37 +1604,58 @@ class SyncDataController {
         }
       }
     } else {
-      // delete jawaban survey by kodeUnik before pull
+      /// delete jawaban survey by kodeUnik and BykategoriId if exist before pull
       for (var nKodeUnik in kodeUnik) {
-        await DbHelper.deleteJawabanSurveyByKodeUnikSurvey(store_,
-            kodeUnikSurvey: nKodeUnik);
+        SurveyModel? survey =
+            await DbHelper.getSurveyByKodeUnik(store_, kodeUnik: nKodeUnik);
 
-        // Get jawabanSurvey form server
-        List<JawabanSurvey>? jawabanSurvey = await DioClient().getJawabanSurvey(
-            token: token, kodeUnikSurvey: nKodeUnik.toString());
-        int diman = id;
-        if (jawabanSurvey != null) {
-          for (var item in jawabanSurvey) {
-            nJawabanSurvey.add(JawabanSurveyModel(
-              // id: id,
-              id: diman,
-              jawabanLainnya: item.jawabanLainnya,
-              jawabanSoalId: item.jawabanSoalId != null
-                  ? int.parse(item.jawabanSoalId!)
-                  : null,
-              kategoriSoalId: int.parse(item.kategoriSoalId),
-              kodeUnikSurveyId: int.parse(item.kodeUnikSurvey),
-              soalId: int.parse(item.soalId),
-              lastModified: DateTime.now().toString(),
-            ));
-            diman += 1;
-            // id += 1;
+        int jenisSurveyId = survey!.namaSurvey.targetId;
+
+        List<KategoriSoalModel> kategoriSoal =
+            await DbHelper.getKategoriSoalByNamaSurveyId(store_,
+                namaSurveyId: jenisSurveyId);
+
+        // get jawaban survey by kategoriSoalId
+        for (var kategori in kategoriSoal) {
+          //get jawaban survey local
+          List<JawabanSurveyModel> jawabanSurveyLocal =
+              await DbHelper.getJawabanSurveyByKategoriSoalId(store_,
+                  kategoriSoalId: kategori.id!, kodeUnikSurvey: nKodeUnik);
+
+          // Get jawabanSurvey form server
+          List<JawabanSurvey>? jawabanSurvey = await DioClient()
+              .getJawabanSurvey(
+                  token: token,
+                  kodeUnikSurvey: nKodeUnik.toString(),
+                  kategoriSoalId: kategori.id.toString());
+
+          if (jawabanSurveyLocal.isNotEmpty && jawabanSurvey != null) {
+            await DbHelper.deleteJawabanSurveyByKategoriSoal(store_,
+                kodeUnikSurvey: nKodeUnik, kategoriId: kategori.id!);
           }
-          await DbHelper.putJawabanSurvey(store_, nJawabanSurvey);
-          debugPrint(
-              "jawaban survey data has been pulled from server to local[refresh]");
-        } else {
-          debugPrint('jawaban survey not found on server');
+
+          int nId = await getIdJawabanSurvey();
+          if (jawabanSurvey != null) {
+            for (var item in jawabanSurvey) {
+              nJawabanSurvey.add(JawabanSurveyModel(
+                id: nId,
+                jawabanLainnya: item.jawabanLainnya,
+                jawabanSoalId: item.jawabanSoalId != null
+                    ? int.parse(item.jawabanSoalId!)
+                    : null,
+                kategoriSoalId: int.parse(item.kategoriSoalId),
+                kodeUnikSurveyId: int.parse(item.kodeUnikSurvey),
+                soalId: int.parse(item.soalId),
+                lastModified: DateTime.now().toString(),
+              ));
+              nId += 1;
+            }
+            await DbHelper.putJawabanSurvey(store_, nJawabanSurvey);
+            debugPrint(
+                "jawaban survey data has been pulled from server to local[refresh]");
+          } else {
+            debugPrint('jawaban survey not found on server');
+          }
         }
       }
     }

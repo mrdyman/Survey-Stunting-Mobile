@@ -456,6 +456,20 @@ class DbHelper {
     return store.box<JawabanSurveyModel>().removeMany(ids);
   }
 
+  /// delete jawaban survey by kategoriSoal
+  static Future<int> deleteJawabanSurveyByKategoriSoal(Store store,
+      {required int kodeUnikSurvey, required int kategoriId}) async {
+    List<int> ids = [];
+    final jawabanSurvey = await getJawabanSurveyByKodeUnikSurveyId(store,
+        kodeUnikSurveyId: kodeUnikSurvey, kategoriSoalId: kategoriId);
+    if (jawabanSurvey.isNotEmpty) {
+      for (var item in jawabanSurvey) {
+        ids.add(item.id!);
+      }
+    }
+    return store.box<JawabanSurveyModel>().removeMany(ids);
+  }
+
   /// delete all jawaban survey
   static Future<int> deleteAllJawabanSurvey(Store store) async {
     return store.box<JawabanSurveyModel>().removeAll();
@@ -476,6 +490,26 @@ class DbHelper {
       surv.kodeUnikResponden.targetId = surv.kodeUnikRespondenId;
     }
     return store.box<SurveyModel>().putMany(survey);
+  }
+
+  ///touch survey
+  /// touch is used to update lastModified filed in box to current time stamps
+  static Future<int> touchSurvey(Store store,
+      {required int kodeUnikSurvey}) async {
+    SurveyModel? survey =
+        await getSurveyByKodeUnik(store, kodeUnik: kodeUnikSurvey);
+    if (survey != null) {
+      SurveyModel surveyData = survey;
+      surveyData.kodeUnikResponden.targetId =
+          survey.kodeUnikRespondenId ?? survey.kodeUnikResponden.targetId;
+      surveyData.namaSurvey.targetId =
+          survey.namaSurveyId ?? survey.namaSurvey.targetId;
+      surveyData.profile.targetId = survey.profileId ?? survey.profile.targetId;
+      surveyData.lastModified = DateTime.now().toString();
+      return store.box<SurveyModel>().put(surveyData);
+    } else {
+      return 0;
+    }
   }
 
   /// get all survey

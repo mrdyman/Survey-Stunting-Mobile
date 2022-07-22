@@ -403,6 +403,19 @@ class IsiSurveyController extends GetxController {
           await DioClient()
               .createJawabanSurvey(token: token, data: currentJawabanSurvey);
 
+          ///also create jawaban survey local
+          //delete jawaban if exist before create
+          await DbHelper.deleteJawabanSurveyByKategoriSoal(
+            Objectbox.store_,
+            kodeUnikSurvey: int.parse(survey.kodeUnik!),
+            kategoriId: currentKategoriSoal.id,
+          );
+
+          var jawabanSurveyModel = currentJawabanSurvey
+              .map((e) => JawabanSurveyModel.fromJson(e.toJson()))
+              .toList();
+          await DbHelper.putJawabanSurvey(Objectbox.store_, jawabanSurveyModel);
+
           await nextCategory();
           successScackbar("Data berhasil disimpan");
         } else {
@@ -421,9 +434,11 @@ class IsiSurveyController extends GetxController {
         isLoadingNext.value = true;
 
         if (initialJawabanSurvey.isNotEmpty) {
-          for (var item in initialJawabanSurvey) {
-            await DbHelper.deleteJawabanSurvey(Objectbox.store_, id: item.id!);
-          }
+          await DbHelper.deleteJawabanSurveyByKategoriSoal(
+            Objectbox.store_,
+            kodeUnikSurvey: int.parse(survey.kodeUnik!),
+            kategoriId: currentKategoriSoal.id,
+          );
         }
 
         var jawabanSurveyModel = currentJawabanSurvey
@@ -433,6 +448,8 @@ class IsiSurveyController extends GetxController {
 
         await nextCategory();
         successScackbar("Data berhasil disimpan");
+      } else {
+        errorScackbar('Mohon Lengkapi jawaban');
       }
       isLoadingNext.value = false;
     }
@@ -468,6 +485,27 @@ class IsiSurveyController extends GetxController {
           "is_selesai": survey.isSelesai,
         },
       );
+      //also update survey local
+      int idToUpdate = await getSurveyId(kodeUnik: int.parse(survey.kodeUnik!));
+      if (idToUpdate != -1) {
+        var surveyModel = SurveyModel(
+          id: idToUpdate,
+          kategoriSelanjutnya: kategoriSoal
+              .firstWhere((element) =>
+                  element.urutan ==
+                  (survey.isSelesai == "0" ? currentOrder.toString() : "1"))
+              .id,
+          kodeUnikRespondenId: kodeUnikResponden,
+          namaSurveyId: namaSurveyId,
+          profileId: profileId,
+          kodeUnik: int.parse(survey.kodeUnik!),
+          isSelesai: int.parse(survey.isSelesai),
+          lastModified: DateTime.now().toString(),
+        );
+        await DbHelper.putSurvey(Objectbox.store_, [surveyModel]);
+      } else {
+        errorScackbar('Survey tidak ditemukan');
+      }
     } else {
       debugPrint('update survey local');
       int idToUpdate = await getSurveyId(kodeUnik: int.parse(survey.kodeUnik!));

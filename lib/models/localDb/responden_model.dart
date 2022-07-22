@@ -11,7 +11,7 @@ class RespondenModel {
   @Id(assignable: true)
   int? id = 0;
   int kodeUnik;
-  int kartuKeluarga;
+  String kartuKeluarga;
   String namaKepalaKeluarga;
   String alamat;
   String? nomorHp;
@@ -48,7 +48,7 @@ class RespondenModel {
   factory RespondenModel.fromJson(Map<String, dynamic> json) => RespondenModel(
         id: json["id"],
         kodeUnik: int.parse(json["kode_unik"]),
-        kartuKeluarga: int.parse(json["kartu_keluarga"]),
+        kartuKeluarga: json["kartu_keluarga"],
         alamat: json["alamat"],
         namaKepalaKeluarga: json["nama_kepala_keluarga"],
         provinsiId: int.parse(json["provinsi_id"]),
@@ -63,7 +63,7 @@ class RespondenModel {
   Map<String, dynamic> toJson() => {
         "id": id,
         "kode_unik": kodeUnik.toString(),
-        "kartu_keluarga": kartuKeluarga.toString(),
+        "kartu_keluarga": kartuKeluarga,
         "alamat": alamat.toString(),
         "nama_kepala_keluarga": namaKepalaKeluarga.toString(),
         "provinsi_id": provinsi.targetId.toString(),
