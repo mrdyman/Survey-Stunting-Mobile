@@ -39,7 +39,7 @@ class SurveyController extends GetxController {
   String statusSurvey = "";
   String kodeUnikResponden = "";
   int namaSurveyId = 0;
-  List<Survey> surveys = [];
+  var surveys = <Survey>[].obs;
   List<Responden> responden = [];
   List<NamaSurvey> namaSurvey = [];
   String token = GetStorage().read("token");
@@ -57,10 +57,10 @@ class SurveyController extends GetxController {
           token: token,
           queryParameters: queryParameters,
         );
-        surveys = response!;
+        surveys.value = response!;
       } on DioError catch (e) {
         if (e.response?.statusCode == 404) {
-          surveys = [];
+          surveys.value = [];
         } else {
           handleError(error: e);
         }
@@ -83,8 +83,9 @@ class SurveyController extends GetxController {
             ? null
             : searchSurveyEditingController.text,
       );
-      inspect(localSurveys_);
-      surveys = localSurveys_.map((e) => Survey.fromJson(e.toJson())).toList()
+      surveys.value = localSurveys_
+          .map((e) => Survey.fromJson(e.toJson()))
+          .toList()
         ..sort((a, b) => b.id!.compareTo(a.id!));
     }
     isLoading.value = false;

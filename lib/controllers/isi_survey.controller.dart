@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
+import 'package:survey_stunting/controllers/survey_controller.dart';
 import 'package:survey_stunting/models/jawaban_soal.dart';
 import 'package:survey_stunting/models/jawaban_survey.dart';
 import 'package:survey_stunting/models/kategori_soal.dart';
@@ -547,6 +548,11 @@ class IsiSurveyController extends GetxController {
     if (currentOrder > kategoriSoal.length) {
       survey.isSelesai = "1";
       await updateSurvey();
+      SurveyController surveyController;
+      surveyController = Get.isRegistered<SurveyController>()
+          ? Get.find()
+          : Get.put(SurveyController());
+      surveyController.surveys.refresh();
       Get.back();
       return;
     }
