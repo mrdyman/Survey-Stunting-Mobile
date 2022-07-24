@@ -199,7 +199,7 @@ class LengkapiProfilScreen extends StatelessWidget {
                             ),
                             FilledTextField(
                               controller: controller.emailTextController,
-                              title: "Email (Optional)",
+                              title: "Email (Boleh kosong)",
                               errorText: controller.emailError.value,
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.done,
