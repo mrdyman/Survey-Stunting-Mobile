@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
+import 'package:survey_stunting/components/loading_dialog.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
 import 'package:survey_stunting/models/responden.dart';
 import 'package:survey_stunting/services/dio_client.dart';
@@ -127,7 +128,8 @@ class TambahRespondenController extends GetxController {
     return true;
   }
 
-  Future submitForm() async {
+  Future submitForm(BuildContext context) async {
+    loadingDialog(context);
     if (validate()) {
       await checkConnection();
       if (isConnect) {
@@ -143,10 +145,38 @@ class TambahRespondenController extends GetxController {
             desaKelurahanId: kelurahanId.toString(),
             nomorHp: nomorHPTEC.text,
           );
-          await DioClient().createResponden(token: token, data: responden);
-          Get.back();
+          final response =
+              await DioClient().createResponden(token: token, data: responden);
+          Get.back(closeOverlays: true);
           successScackbar("Data berhasil disimpan");
+          //make sure responden create successful at server
+          if (response != null) {
+            //aslo create responden on local
+            List<RespondenModel> nResponden =
+                await DbHelper.getResponden(Objectbox.store_);
+            var responden = nResponden.firstWhereOrNull(
+                (resp) => resp.kartuKeluarga == kartuKeluargaTEC.text);
+            if (responden == null) {
+              //store data
+              int id = await getIdResponden();
+              RespondenModel respondenModel = RespondenModel(
+                id: id,
+                kodeUnik: response.kodeUnik,
+                kartuKeluarga: kartuKeluargaTEC.text,
+                namaKepalaKeluarga: namaKepalaKeluargaTEC.text,
+                alamat: alamatTEC.text,
+                nomorHp: nomorHPTEC.text,
+                provinsiId: provinsiId,
+                kabupatenId: kabupatenId,
+                kecamatanId: kecamatanId,
+                kelurahanId: kelurahanId,
+                lastModified: DateTime.now().toString(),
+              );
+              await DbHelper.putResponden(Objectbox.store_, [respondenModel]);
+            }
+          }
         } on DioError catch (e) {
+          loadingDialog(context, show: false);
           handleError(error: e);
         }
       } else {
@@ -156,6 +186,7 @@ class TambahRespondenController extends GetxController {
         var responden = nResponden.firstWhereOrNull(
             (resp) => resp.kartuKeluarga == kartuKeluargaTEC.text);
         if (responden != null) {
+          loadingDialog(context, show: false);
           errorScackbar('Responden sudah ada');
           return;
         }
@@ -176,9 +207,12 @@ class TambahRespondenController extends GetxController {
           lastModified: DateTime.now().toString(),
         );
         await DbHelper.putResponden(Objectbox.store_, [respondenModel]);
-        Get.back();
+        Get.back(closeOverlays: true);
         successScackbar("Data berhasil disimpan");
       }
+    } else {
+      errorScackbar('Mohon periksa kembali data yang diinput');
+      loadingDialog(context, show: false);
     }
   }
 

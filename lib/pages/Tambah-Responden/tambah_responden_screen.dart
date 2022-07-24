@@ -148,7 +148,8 @@ class TambahRespondenScreen extends StatelessWidget {
                         "assets/icons/outline/tick-square.svg",
                         color: Colors.white,
                       ),
-                      onPressed: controller.submitForm,
+                      // onPressed: controller.submitForm,
+                      onPressed: () => controller.submitForm(context),
                     ),
                   )
                 ],
