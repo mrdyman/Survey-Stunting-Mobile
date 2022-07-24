@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +8,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
+import 'package:survey_stunting/components/loading_dialog.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
+import 'package:survey_stunting/components/sync_prompt.dart';
 import 'package:survey_stunting/controllers/beranda_controller.dart';
 import 'package:survey_stunting/controllers/export_survey_controller.dart';
 import 'package:survey_stunting/controllers/survey_controller.dart';
@@ -384,7 +388,9 @@ class IsiSurveyController extends GetxController {
     }
   }
 
-  Future submitForm() async {
+  Future submitForm(BuildContext context) async {
+    syncPromptDialog(context);
+    loadingDialog(context);
     await checkConnection();
     if (isConnect) {
       debugPrint('create jawaban survey online');
@@ -418,14 +424,22 @@ class IsiSurveyController extends GetxController {
               .map((e) => JawabanSurveyModel.fromJson(e.toJson()))
               .toList();
           await DbHelper.putJawabanSurvey(Objectbox.store_, jawabanSurveyModel);
-
+          loadingDialog(context, show: false);
           await nextCategory();
           successScackbar("Data berhasil disimpan");
         } else {
+          loadingDialog(context, show: false);
           errorScackbar('Mohon Lengkapi jawaban');
         }
       } on DioError catch (e) {
-        handleError(error: e);
+        loadingDialog(context, show: false);
+        if (e.response?.statusCode == 400) {
+          //survey not found in server, failed to store jawaban survey
+          //show prompt to sync.
+          syncPromptDialog(context);
+        } else {
+          handleError(error: e);
+        }
       }
       isLoadingNext.value = false;
     } else {
@@ -448,10 +462,11 @@ class IsiSurveyController extends GetxController {
             .map((e) => JawabanSurveyModel.fromJson(e.toJson()))
             .toList();
         await DbHelper.putJawabanSurvey(Objectbox.store_, jawabanSurveyModel);
-
+        loadingDialog(context, show: false);
         await nextCategory();
         successScackbar("Data berhasil disimpan");
       } else {
+        loadingDialog(context, show: false);
         errorScackbar('Mohon Lengkapi jawaban');
       }
       isLoadingNext.value = false;

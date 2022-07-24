@@ -100,7 +100,7 @@ class IsiSurveyScreen extends StatelessWidget {
                                     ),
                                     isLoading: controller.isLoadingNext.value,
                                     onPressed: () async {
-                                      await controller.submitForm();
+                                      await controller.submitForm(context);
                                     },
                                   ),
                                 ])
