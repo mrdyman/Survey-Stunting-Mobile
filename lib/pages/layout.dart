@@ -145,15 +145,16 @@ class Layout extends StatelessWidget {
                           value: controller.isDarkTheme.value,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          onChanged: (value) {
+                          onChanged: (value) async {
                             controller.isDarkTheme.value = value;
+                            await controller.setDarkMode(value);
                             Get.changeThemeMode(
                               controller.isDarkTheme.value
                                   ? ThemeMode.dark
                                   : ThemeMode.light,
                             );
                           },
-                        )
+                        ),
                       ],
                     ),
                     ListTile(

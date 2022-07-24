@@ -86,9 +86,23 @@ class LayoutController extends GetxController {
     return prefs.getBool("first_install") ?? true;
   }
 
+  Future isDarkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    isDarkTheme.value = prefs.getBool("isDarkMode") ?? false;
+  }
+
+  Future setDarkMode(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isDarkMode', value);
+  }
+
   @override
   void onInit() async {
     await checkConnection();
+    await isDarkMode();
+    Get.changeThemeMode(
+      isDarkTheme.value ? ThemeMode.dark : ThemeMode.light,
+    );
 
     Future.delayed(const Duration(milliseconds: 1500), () {
       canExit = true;
