@@ -18,7 +18,7 @@ class BerandaController extends GetxController {
   final searchSurveyEditingController = TextEditingController();
   var isLoadedSurvey = false.obs;
   var isLoadedTotalSurvey = false.obs;
-  List<Survey> surveys = [];
+  var surveys = <Survey>[].obs;
   TotalSurvey totalSurvey = TotalSurvey();
 
   String token = GetStorage().read("token");
@@ -37,10 +37,10 @@ class BerandaController extends GetxController {
             search: search,
           ),
         );
-        surveys = response!;
+        surveys.value = response!;
       } on DioError catch (e) {
         if (e.response?.statusCode == 404) {
-          surveys = [];
+          surveys.value = [];
         } else {
           handleError(error: e);
         }
@@ -57,7 +57,8 @@ class BerandaController extends GetxController {
         isSelesai: 0,
         keyword: search,
       );
-      surveys = localSurveys_.map((e) => Survey.fromJson(e.toJson())).toList();
+      surveys.value =
+          localSurveys_.map((e) => Survey.fromJson(e.toJson())).toList();
     }
     isLoadedSurvey.value = true;
   }

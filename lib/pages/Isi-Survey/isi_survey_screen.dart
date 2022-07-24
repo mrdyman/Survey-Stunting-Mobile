@@ -16,7 +16,10 @@ class IsiSurveyScreen extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              controller.refreshUI();
+              Get.back();
+            },
             icon: SvgPicture.asset(
               "assets/icons/outline/arrow-left.svg",
               color: Theme.of(context).textTheme.headline1!.color,

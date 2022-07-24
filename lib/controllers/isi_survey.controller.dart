@@ -7,6 +7,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
+import 'package:survey_stunting/controllers/beranda_controller.dart';
+import 'package:survey_stunting/controllers/export_survey_controller.dart';
 import 'package:survey_stunting/controllers/survey_controller.dart';
 import 'package:survey_stunting/models/jawaban_soal.dart';
 import 'package:survey_stunting/models/jawaban_survey.dart';
@@ -399,18 +401,18 @@ class IsiSurveyController extends GetxController {
               kodeUnikSurvey: int.parse(survey.kodeUnik!),
               kategoriSoalId: currentKategoriSoal.id,
             );
+
+            ///also create jawaban survey local
+            //delete jawaban if exist before create
+            await DbHelper.deleteJawabanSurveyByKategoriSoal(
+              Objectbox.store_,
+              kodeUnikSurvey: int.parse(survey.kodeUnik!),
+              kategoriId: currentKategoriSoal.id,
+            );
           }
 
           await DioClient()
               .createJawabanSurvey(token: token, data: currentJawabanSurvey);
-
-          ///also create jawaban survey local
-          //delete jawaban if exist before create
-          await DbHelper.deleteJawabanSurveyByKategoriSoal(
-            Objectbox.store_,
-            kodeUnikSurvey: int.parse(survey.kodeUnik!),
-            kategoriId: currentKategoriSoal.id,
-          );
 
           var jawabanSurveyModel = currentJawabanSurvey
               .map((e) => JawabanSurveyModel.fromJson(e.toJson()))
@@ -548,11 +550,7 @@ class IsiSurveyController extends GetxController {
     if (currentOrder > kategoriSoal.length) {
       survey.isSelesai = "1";
       await updateSurvey();
-      SurveyController surveyController;
-      surveyController = Get.isRegistered<SurveyController>()
-          ? Get.find()
-          : Get.put(SurveyController());
-      surveyController.surveys.refresh();
+      refreshUI();
       Get.back();
       return;
     }
@@ -585,5 +583,27 @@ class IsiSurveyController extends GetxController {
 
   Future checkConnection() async {
     isConnect = await global.isConnected();
+  }
+
+  /// refresh UI survey list data
+  void refreshUI() {
+    BerandaController berandaController;
+    SurveyController surveyController;
+    ExportSurveyController exportSurveyController;
+
+    berandaController = Get.isRegistered<BerandaController>()
+        ? Get.find()
+        : Get.put(BerandaController());
+
+    surveyController = Get.isRegistered<SurveyController>()
+        ? Get.find()
+        : Get.put(SurveyController());
+    exportSurveyController = Get.isRegistered<ExportSurveyController>()
+        ? Get.find()
+        : Get.put(ExportSurveyController());
+
+    berandaController.getSurvey();
+    surveyController.getSurvey();
+    exportSurveyController.getSurvey(namaSurveyId: "");
   }
 }

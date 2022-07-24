@@ -33,7 +33,7 @@ class ExportSurveyController extends GetxController {
   var isLoaded = false.obs;
   var exportStatus = 'completed'.obs;
   String namaSurveyId = "";
-  List<Survey> surveys = [];
+  var surveys = <Survey>[].obs;
   var namaSurvey = [].obs;
   List<KategoriSoal> kategoriSoal = [];
   List<Soal> soal = [];
@@ -58,10 +58,10 @@ class ExportSurveyController extends GetxController {
             status: "selesai",
           ),
         );
-        surveys = response!;
+        surveys.value = response!;
       } on DioError catch (e) {
         if (e.response?.statusCode == 404) {
-          surveys = [];
+          surveys.value = [];
         } else {
           handleError(error: e);
         }
@@ -77,7 +77,8 @@ class ExportSurveyController extends GetxController {
         isSelesai: 1,
         namaSurveyId: namaSurveyId,
       );
-      surveys = localSurveys_.map((e) => Survey.fromJson(e.toJson())).toList();
+      surveys.value =
+          localSurveys_.map((e) => Survey.fromJson(e.toJson())).toList();
     }
     isLoaded.value = true;
   }

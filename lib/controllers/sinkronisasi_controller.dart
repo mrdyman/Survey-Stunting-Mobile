@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:survey_stunting/components/error_scackbar.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
+import 'package:survey_stunting/controllers/isi_survey.controller.dart';
 import 'package:survey_stunting/controllers/sync_data_controller.dart';
 import '../consts/globals_lib.dart' as global;
 import '../models/localDb/helpers.dart';
@@ -42,6 +43,7 @@ class SinkronisasiController extends GetxController {
             : DateFormat("dd-MMMM-yyyy hh:mm a")
                 .format(DateTime.parse(prefs.getString('last_sync')!));
         isLoading.value = false;
+        IsiSurveyController().refreshUI();
       }
     } else {
       errorScackbar('Tidak ada koneksi internet');
