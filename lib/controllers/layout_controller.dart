@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/sync_data_controller.dart';
 import 'package:survey_stunting/models/session.dart';
 
@@ -115,6 +116,7 @@ class LayoutController extends GetxController {
     Get.defaultDialog(
       title: '',
       barrierDismissible: false,
+      backgroundColor: scaffoldBackground,
       content: WillPopScope(
         onWillPop: () async => false,
         child: Center(

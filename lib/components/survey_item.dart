@@ -8,6 +8,7 @@ import 'package:survey_stunting/models/survey.dart';
 class SurveyItem extends StatelessWidget {
   const SurveyItem({
     required this.survey,
+    this.onDetails,
     this.onDelete,
     this.onEdit,
     this.enabled = true,
@@ -18,6 +19,7 @@ class SurveyItem extends StatelessWidget {
   final bool enabled;
   final dynamic Function()? onDelete;
   final dynamic Function()? onEdit;
+  final dynamic Function()? onDetails;
   final void Function()? onTap;
 
   @override
@@ -31,7 +33,7 @@ class SurveyItem extends StatelessWidget {
         closeOnScroll: true,
         endActionPane: ActionPane(
           motion: const BehindMotion(),
-          extentRatio: 0.35,
+          extentRatio: 0.50,
           // dismissible: DismissiblePane(onDismissed: () {}),
           children: [
             Padding(
@@ -51,6 +53,17 @@ class SurveyItem extends StatelessWidget {
               icon: SvgPicture.asset(
                 "assets/icons/bold/edit.svg",
                 color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: CustomIconButton(
+                onTap: onDetails ?? () {},
+                color: Colors.blue.shade300,
+                icon: SvgPicture.asset(
+                  "assets/icons/bold/eye.svg",
+                  color: Colors.white,
+                ),
               ),
             ),
           ],

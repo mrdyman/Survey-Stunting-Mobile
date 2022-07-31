@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
+import 'package:survey_stunting/consts/colors.dart';
 
 import '../controllers/sinkronisasi_controller.dart';
 
@@ -12,6 +13,7 @@ Future synchronizeDialog(BuildContext context) async {
   Get.defaultDialog(
     title: '',
     barrierDismissible: false,
+    backgroundColor: scaffoldBackground,
     onWillPop: () async {
       Fluttertoast.showToast(
         msg: "Mohon tunggu proses sinkronisasi",

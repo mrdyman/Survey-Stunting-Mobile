@@ -341,6 +341,13 @@ class SurveyScreen extends StatelessWidget {
                                           true
                                         ]);
                                   },
+                                  onDetails: () {
+                                    Get.toNamed(
+                                      RouteName.detailSurvey,
+                                      arguments:
+                                          surveyController.surveys[index],
+                                    );
+                                  },
                                 );
                               },
                             )
