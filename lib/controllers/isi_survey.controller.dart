@@ -10,10 +10,10 @@ import 'package:survey_stunting/components/error_scackbar.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/loading_dialog.dart';
 import 'package:survey_stunting/components/success_scackbar.dart';
-import 'package:survey_stunting/components/sync_prompt.dart';
 import 'package:survey_stunting/controllers/beranda_controller.dart';
 import 'package:survey_stunting/controllers/export_survey_controller.dart';
 import 'package:survey_stunting/controllers/survey_controller.dart';
+import 'package:survey_stunting/controllers/sync_data_controller.dart';
 import 'package:survey_stunting/models/jawaban_soal.dart';
 import 'package:survey_stunting/models/jawaban_survey.dart';
 import 'package:survey_stunting/models/kategori_soal.dart';
@@ -389,7 +389,6 @@ class IsiSurveyController extends GetxController {
   }
 
   Future submitForm(BuildContext context) async {
-    syncPromptDialog(context);
     loadingDialog(context);
     await checkConnection();
     if (isConnect) {
@@ -435,8 +434,11 @@ class IsiSurveyController extends GetxController {
         loadingDialog(context, show: false);
         if (e.response?.statusCode == 400) {
           //survey not found in server, failed to store jawaban survey
-          //show prompt to sync.
-          syncPromptDialog(context);
+          // run sync.
+          loadingDialog(context);
+          await SyncDataController(store_: Objectbox.store_)
+              .syncData(syncAll: false);
+          loadingDialog(context, show: false);
         } else {
           handleError(error: e);
         }
