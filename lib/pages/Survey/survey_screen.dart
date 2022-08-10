@@ -6,7 +6,6 @@ import 'package:survey_stunting/components/custom_elevated_button.dart';
 import 'package:survey_stunting/components/custom_icon_button.dart';
 import 'package:survey_stunting/components/filled_autocomplete.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
-import 'package:survey_stunting/components/loading_dialog.dart';
 import 'package:survey_stunting/components/not_found.dart';
 import 'package:survey_stunting/components/rounded_button.dart';
 import 'package:survey_stunting/components/survey_item.dart';
