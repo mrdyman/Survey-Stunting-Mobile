@@ -176,7 +176,7 @@ class LayoutController extends GetxController {
                         color: Colors.red,
                       )),
                   const SizedBox(height: 10),
-                  Text('Mohon Untuk meperhatikan hal berikut ini:',
+                  Text('Mohon Untuk memperhatikan hal berikut ini:',
                       style: TextStyle(
                           fontFamily: GoogleFonts.inter().fontFamily,
                           fontWeight: FontWeight.bold,
