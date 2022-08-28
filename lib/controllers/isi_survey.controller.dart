@@ -109,7 +109,7 @@ class IsiSurveyController extends GetxController {
           initialJawabanSurvey = [];
         }
       } on DioError catch (e) {
-        if (e.response!.statusCode == 404) {
+        if (e.response?.statusCode == 404) {
           initialJawabanSurvey = [];
         } else {
           handleError(error: e);
