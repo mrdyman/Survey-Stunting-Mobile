@@ -233,6 +233,7 @@ class IsiSurveyController extends GetxController {
   }) {
     switch (typeJawaban) {
       case "Pilihan Ganda":
+        bool isLainnya = false;
         var options = jawabanSoal!.map((value) {
           JawabanSurvey jawabanSurvey;
           var check = initialJawabanSurvey.firstWhereOrNull((element) =>
@@ -257,6 +258,14 @@ class IsiSurveyController extends GetxController {
                     onChanged: (value) => jawabanSurvey.jawabanLainnya = value,
                     hintText: "Lainnya",
                     onSaved: (value) {},
+                    validator: (jawab) {
+                      if (isLainnya) {
+                        if (jawab == "null" || jawab == null || jawab == "") {
+                          return "Jawaban Lainnya wajib diisi";
+                        }
+                      }
+                      return null;
+                    },
                   ),
           );
         }).toList();
@@ -280,6 +289,15 @@ class IsiSurveyController extends GetxController {
               validator: (value) {
                 if (value == null) {
                   return "Jawaban tidak boleh kosong";
+                } else {
+                  value as JawabanSurvey;
+                  String? currentJawabanChecked = jawabanSoal
+                      .firstWhereOrNull((element) =>
+                          element.id == int.parse(value.jawabanSoalId!))
+                      ?.jawaban;
+                  if (currentJawabanChecked == "Lainnya") {
+                    isLainnya = true;
+                  }
                 }
                 return null;
               },
@@ -291,6 +309,7 @@ class IsiSurveyController extends GetxController {
           ],
         );
       case "Kotak Centang":
+        bool isLainnya = false;
         var options = jawabanSoal!.map((value) {
           JawabanSurvey jawabanSurvey;
           var check = initialJawabanSurvey.firstWhereOrNull((element) =>
@@ -315,6 +334,14 @@ class IsiSurveyController extends GetxController {
                     onChanged: (value) => jawabanSurvey.jawabanLainnya = value,
                     hintText: "Lainnya",
                     onSaved: (value) {},
+                    validator: (jawab) {
+                      if (isLainnya) {
+                        if (jawab == "null" || jawab == null || jawab == "") {
+                          return "Jawaban Lainnya wajib diisi";
+                        }
+                      }
+                      return null;
+                    },
                   ),
           );
         }).toList();
@@ -338,6 +365,17 @@ class IsiSurveyController extends GetxController {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Jawaban tidak boleh kosong";
+                } else {
+                  for (var item in value) {
+                    item as JawabanSurvey;
+                    String? currentJawabanChecked = jawabanSoal
+                        .firstWhereOrNull((element) =>
+                            element.id == int.parse(item.jawabanSoalId!))
+                        ?.jawaban;
+                    if (currentJawabanChecked == "Lainnya") {
+                      isLainnya = true;
+                    }
+                  }
                 }
                 return null;
               },
