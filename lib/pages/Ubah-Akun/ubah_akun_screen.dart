@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/ux/akun_loading_animation.dart';
-import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/ubah_akun_controller.dart';
 
 class UbahAkunScreen extends StatelessWidget {
