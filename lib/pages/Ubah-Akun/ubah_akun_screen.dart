@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
+import 'package:survey_stunting/components/ux/akun_loading_animation.dart';
 import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/ubah_akun_controller.dart';
 
@@ -23,16 +24,10 @@ class UbahAkunScreen extends StatelessWidget {
               color: Theme.of(context).textTheme.headline1!.color,
             ),
           ),
-          // title: Text(
-          //   "Dahboard",
-          //   style: Theme.of(context).textTheme.titleLarge,
-          // ),
         ),
         body: Obx(
           () => controller.isLoading.value
-              ? const Center(
-                  child: CircularProgressIndicator(color: primaryColor),
-                )
+              ? akunLoading(context)
               : SafeArea(
                   child: Padding(
                     padding:

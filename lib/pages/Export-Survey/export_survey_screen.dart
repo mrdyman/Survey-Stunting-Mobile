@@ -7,6 +7,7 @@ import 'package:survey_stunting/components/filled_autocomplete.dart';
 import 'package:survey_stunting/components/not_found.dart';
 import 'package:survey_stunting/components/survey_item.dart';
 import 'package:survey_stunting/controllers/export_survey_controller.dart';
+import '../../components/ux/survey_item_loading.dart';
 import '../../consts/globals_lib.dart' as global;
 
 class ExportSurveyScreen extends StatelessWidget {
@@ -90,9 +91,7 @@ class ExportSurveyScreen extends StatelessWidget {
                 Obx(
                   () => Visibility(
                     visible: exportSurveyController.isLoaded.value,
-                    replacement: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    replacement: surveyItemLoading(context),
                     child: exportSurveyController.surveys.isNotEmpty
                         ? ListView.builder(
                             shrinkWrap: true,

@@ -9,6 +9,7 @@ import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/not_found.dart';
 import 'package:survey_stunting/components/rounded_button.dart';
 import 'package:survey_stunting/components/survey_item.dart';
+import 'package:survey_stunting/components/ux/survey_item_loading.dart';
 import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/survey_controller.dart';
 import 'package:survey_stunting/models/survey_parameters.dart';
@@ -278,9 +279,7 @@ class SurveyScreen extends StatelessWidget {
                   Obx(
                     () => Visibility(
                       visible: !surveyController.isLoading.value,
-                      replacement: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      replacement: surveyItemLoading(context),
                       child: surveyController.surveys.isNotEmpty
                           ? ListView.builder(
                               shrinkWrap: true,

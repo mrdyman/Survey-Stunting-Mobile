@@ -6,6 +6,8 @@ import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/ubah_profil_controller.dart';
 
+import '../../components/ux/profile_loading_animation.dart';
+
 class UbahProfilScreen extends StatelessWidget {
   const UbahProfilScreen({Key? key}) : super(key: key);
 
@@ -25,16 +27,10 @@ class UbahProfilScreen extends StatelessWidget {
                 color: Theme.of(context).textTheme.headline1!.color,
               ),
             ),
-            // title: Text(
-            //   "Dahboard",
-            //   style: Theme.of(context).textTheme.titleLarge,
-            // ),
           ),
           body: Obx(
             () => controller.isLoaded.value == false
-                ? const Center(
-                    child: CircularProgressIndicator(color: primaryColor),
-                  )
+                ? profileLoading(context)
                 : SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
