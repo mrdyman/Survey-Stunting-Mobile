@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:survey_stunting/components/custom_elevated_button_icon.dart';
+import 'package:survey_stunting/components/ux/isi_survey_loading.dart';
+import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/controllers/isi_survey.controller.dart';
 
 class IsiSurveyScreen extends StatelessWidget {
@@ -34,9 +37,25 @@ class IsiSurveyScreen extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.start,
                 runSpacing: 20,
                 children: [
-                  Text(
-                    "Isi Survey",
-                    style: Theme.of(context).textTheme.headline1,
+                  Obx(
+                    () => Visibility(
+                      visible: !controller.isLoading.value,
+                      replacement: Shimmer.fromColors(
+                        child: Container(
+                          width: 100,
+                          height: 25,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.grey[300]),
+                        ),
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                      ),
+                      child: Text(
+                        "Isi Survey",
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -44,9 +63,7 @@ class IsiSurveyScreen extends StatelessWidget {
                   Obx(
                     () => Visibility(
                       visible: !controller.isLoading.value,
-                      replacement: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      replacement: isiSurveyLoading(context),
                       child: Form(
                         key: controller.formKey,
                         child: Wrap(
@@ -77,6 +94,7 @@ class IsiSurveyScreen extends StatelessWidget {
                                 children: [
                                   if (controller.currentOrder > 1)
                                     CustomElevatedButtonIcon(
+                                      backgroundColor: primaryColor,
                                       label: "Kembali",
                                       icon: SvgPicture.asset(
                                         "assets/icons/outline/arrow-left.svg",

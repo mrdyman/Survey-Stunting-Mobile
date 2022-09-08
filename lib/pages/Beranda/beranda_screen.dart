@@ -6,8 +6,10 @@ import 'package:survey_stunting/components/beranda_item.dart';
 import 'package:survey_stunting/components/filled_text_field.dart';
 import 'package:survey_stunting/components/not_found.dart';
 import 'package:survey_stunting/components/survey_item.dart';
+import 'package:survey_stunting/components/ux/beranda_item_loading.dart';
 import 'package:survey_stunting/controllers/beranda_controller.dart';
 import 'package:survey_stunting/routes/route_name.dart';
+import '../../components/ux/survey_item_loading.dart';
 import '../../consts/globals_lib.dart' as global;
 
 class BerandaScreen extends StatelessWidget {
@@ -54,58 +56,72 @@ class BerandaScreen extends StatelessWidget {
                 Obx(
                   () => SizedBox(
                     height: 90,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        BerandaItem(
-                          icon: SvgPicture.asset(
-                            "assets/icons/bulk/profile-2user.svg",
-                            color: Theme.of(context).primaryColor,
+                    child: !berandaController.isLoadedTotalSurvey.value
+                        ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              berandaItemLoading(context),
+                              berandaItemLoading(context),
+                            ],
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              BerandaItem(
+                                icon: SvgPicture.asset(
+                                  "assets/icons/bulk/profile-2user.svg",
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                title: "Total Responden Anda",
+                                subTitle: berandaController
+                                            .totalSurvey.totalResponden !=
+                                        null
+                                    ? berandaController
+                                        .totalSurvey.totalResponden
+                                        .toString()
+                                    : "0",
+                                isLoaded:
+                                    berandaController.isLoadedTotalSurvey.value,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              BerandaItem(
+                                icon: SvgPicture.asset(
+                                  "assets/icons/bulk/profile-2user.svg",
+                                  color: Colors.blue.shade300,
+                                ),
+                                title: "Responden Survey Pre",
+                                subTitle: berandaController
+                                            .totalSurvey.respondenPre !=
+                                        null
+                                    ? berandaController.totalSurvey.respondenPre
+                                        .toString()
+                                    : "0",
+                                isLoaded:
+                                    berandaController.isLoadedTotalSurvey.value,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              BerandaItem(
+                                icon: SvgPicture.asset(
+                                  "assets/icons/bulk/profile-2user.svg",
+                                  color: Colors.indigo.shade300,
+                                ),
+                                title: "Responden Survey Post",
+                                subTitle: berandaController
+                                            .totalSurvey.respondenPost !=
+                                        null
+                                    ? berandaController
+                                        .totalSurvey.respondenPost
+                                        .toString()
+                                    : "0",
+                                isLoaded:
+                                    berandaController.isLoadedTotalSurvey.value,
+                              )
+                            ],
                           ),
-                          title: "Total Responden Anda",
-                          subTitle:
-                              berandaController.totalSurvey.totalResponden !=
-                                      null
-                                  ? berandaController.totalSurvey.totalResponden
-                                      .toString()
-                                  : "0",
-                          isLoaded: berandaController.isLoadedTotalSurvey.value,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        BerandaItem(
-                          icon: SvgPicture.asset(
-                            "assets/icons/bulk/profile-2user.svg",
-                            color: Colors.blue.shade300,
-                          ),
-                          title: "Responden Survey Pre",
-                          subTitle:
-                              berandaController.totalSurvey.respondenPre != null
-                                  ? berandaController.totalSurvey.respondenPre
-                                      .toString()
-                                  : "0",
-                          isLoaded: berandaController.isLoadedTotalSurvey.value,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        BerandaItem(
-                          icon: SvgPicture.asset(
-                            "assets/icons/bulk/profile-2user.svg",
-                            color: Colors.indigo.shade300,
-                          ),
-                          title: "Responden Survey Post",
-                          subTitle:
-                              berandaController.totalSurvey.respondenPost !=
-                                      null
-                                  ? berandaController.totalSurvey.respondenPost
-                                      .toString()
-                                  : "0",
-                          isLoaded: berandaController.isLoadedTotalSurvey.value,
-                        )
-                      ],
-                    ),
                   ),
                 ),
                 SizedBox(
@@ -138,9 +154,7 @@ class BerandaScreen extends StatelessWidget {
                 Obx(
                   () => Visibility(
                       visible: berandaController.isLoadedSurvey.value,
-                      replacement: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      replacement: surveyItemLoading(context),
                       child: berandaController.surveys.isNotEmpty
                           ? ListView.builder(
                               shrinkWrap: true,

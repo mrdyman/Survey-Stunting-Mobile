@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:survey_stunting/components/ux/isi_survey_loading.dart';
 import 'package:survey_stunting/controllers/detail_survey_controller.dart';
 import 'package:survey_stunting/pages/Detail-Survey/ketegori_soal_item.dart';
 
@@ -41,9 +42,7 @@ class DetailSurveyScreen extends StatelessWidget {
                     Obx(
                       () => Visibility(
                         visible: !controller.isLoading.value,
-                        replacement: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        replacement: isiSurveyLoading(context),
                         child: Wrap(
                           runSpacing: 40,
                           children: [

@@ -261,7 +261,12 @@ class IsiSurveyController extends GetxController {
                     validator: (jawab) {
                       if (isLainnya) {
                         if (jawab == "null" || jawab == null || jawab == "") {
+                          isLainnya = false;
                           return "Jawaban Lainnya wajib diisi";
+                        }
+                      } else {
+                        if (jawab != "") {
+                          return "Kosongkan jika tidak memilih jawaban Lainnya";
                         }
                       }
                       return null;
@@ -297,6 +302,9 @@ class IsiSurveyController extends GetxController {
                       ?.jawaban;
                   if (currentJawabanChecked == "Lainnya") {
                     isLainnya = true;
+                  }
+                  if (isLainnya && value.jawabanLainnya == null) {
+                    return "Pilih Jawaban Lainnya dan input Kembali jawaban";
                   }
                 }
                 return null;
@@ -337,7 +345,12 @@ class IsiSurveyController extends GetxController {
                     validator: (jawab) {
                       if (isLainnya) {
                         if (jawab == "null" || jawab == null || jawab == "") {
+                          isLainnya = false;
                           return "Jawaban Lainnya wajib diisi";
+                        }
+                      } else {
+                        if (jawab != "") {
+                          return "Kosongkan jika tidak memilih jawaban Lainnya";
                         }
                       }
                       return null;
@@ -374,10 +387,12 @@ class IsiSurveyController extends GetxController {
                         ?.jawaban;
                     if (currentJawabanChecked == "Lainnya") {
                       isLainnya = true;
+                    } else {
+                      isLainnya = false;
                     }
                   }
+                  return null;
                 }
-                return null;
               },
               onSaved: (value) async {
                 if (value!.isNotEmpty) {
