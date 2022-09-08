@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lottie/lottie.dart';
 import 'package:survey_stunting/consts/colors.dart';
 import 'package:survey_stunting/routes/app_page.dart';
 import 'package:survey_stunting/routes/route_name.dart';
@@ -195,9 +196,9 @@ class WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(),
+        child: LottieBuilder.asset("assets/anim/loading.json", width: 100),
       ),
     );
   }
