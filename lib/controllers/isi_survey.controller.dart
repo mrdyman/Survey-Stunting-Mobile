@@ -440,6 +440,9 @@ class IsiSurveyController extends GetxController {
   }
 
   Future submitForm(BuildContext context) async {
+    if (soal.isEmpty) {
+      return;
+    }
     loadingDialog(context);
     await checkConnection();
     if (isConnect) {
